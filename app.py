@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 from PIL import Image, ImageDraw, ImageFont
 import io
 
+# Force rebuild - v1.0.1
+
 # Page Config
 st.set_page_config(
     page_title="Trade Smarter, Not Harder: Your Personal AI Stock Agent", 
