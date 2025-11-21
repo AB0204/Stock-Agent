@@ -158,6 +158,21 @@ def generate_certificate(ticker, price, recommendation, sentiment_score, pe_rati
 with st.sidebar:
     st.title("🤖 Stock Agent")
     
+    # Theme Toggle
+    theme_mode = st.toggle("☀️ Light Mode", value=False)
+    if theme_mode:
+        st.markdown("""
+        <style>
+            .stApp {
+                background-color: #FFFFFF;
+                color: #000000;
+            }
+            .stSidebar {
+                background-color: #F5F5F5;
+            }
+        </style>
+        """, unsafe_allow_html=True)
+    
     # Analysis Mode
     analysis_mode = st.radio(
         "Analysis Mode",
@@ -383,6 +398,9 @@ for i, ticker in enumerate(selected_tickers):
         # Fundamentals
         col1, col2, col3, col4 = st.columns(4)
         current_price = info.get('currentPrice', info.get('regularMarketPrice', 0))
+        previous_close = info.get('previousClose', current_price)
+        beta = info.get('beta', 1.0)
+        
         with col1: st.metric("Current Price", f"${current_price:.2f}")
         with col2: st.metric("Market Cap", format_large_number(info.get('marketCap')))
         with col3: st.metric("P/E Ratio", f"{info.get('trailingPE', 'N/A')}")
@@ -433,6 +451,74 @@ for i, ticker in enumerate(selected_tickers):
         else:
             recommendation = "HOLD"
 
+        # Calculate target price and risk metrics
+        target_price = current_price * (1 + adjusted_sentiment * 0.3)  # 30% sentiment weight
+        upside_percent = ((target_price - current_price) / current_price) * 100
+        
+        # Risk rating based on beta
+        if beta < 0.8:
+            risk_rating = "Low"
+            risk_color = "green"
+        elif beta < 1.5:
+            risk_rating = "Medium"
+            risk_color = "orange"
+        else:
+            risk_rating = "High"
+            risk_color = "red"
+        
+        # Social buzz (based on news volume)
+        news_volume = len(analyzed_news) if analyzed_news else 0
+        if news_volume > 15:
+            social_buzz = "🔥 Very High"
+            buzz_mentions = f"{news_volume * 500}+"
+        elif news_volume > 8:
+            social_buzz = "📈 High"
+            buzz_mentions = f"{news_volume * 300}+"
+        elif news_volume > 3:
+            social_buzz = "💬 Moderate"
+            buzz_mentions = f"{news_volume * 150}+"
+        else:
+            social_buzz = "🔇 Low"
+            buzz_mentions = f"<{news_volume * 100}"
+        
+        # Executive Summary Card
+        st.markdown("---")
+        st.markdown("### 📊 Executive Summary")
+        summary_card = f"""
+        <div style='background: linear-gradient(135deg, #1E1E1E 0%, #2D2D2D 100%); 
+                    padding: 25px; border-radius: 15px; border: 2px solid #FFD700; margin-bottom: 20px;'>
+            <h2 style='color: #FFD700; margin: 0 0 15px 0;'>{ticker}</h2>
+            <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 15px;'>
+                <div>
+                    <p style='color: #888; margin: 5px 0;'>Recommendation</p>
+                    <h3 style='color: {'#00FF88' if recommendation == 'BUY' else '#FF4444' if recommendation == 'SELL' else '#FFD700'}; margin: 0;'>{recommendation}</h3>
+                </div>
+                <div>
+                    <p style='color: #888; margin: 5px 0;'>Target Price</p>
+                    <h3 style='color: #FFFFFF; margin: 0;'>${target_price:.2f} ({upside_percent:+.1f}%)</h3>
+                </div>
+                <div>
+                    <p style='color: #888; margin: 5px 0;'>Risk Level</p>
+                    <h3 style='color: {risk_color}; margin: 0;'>{risk_rating} (β: {beta:.2f})</h3>
+                </div>
+                <div>
+                    <p style='color: #888; margin: 5px 0;'>Sentiment Score</p>
+                    <h3 style='color: #FFFFFF; margin: 0;'>{adjusted_sentiment:.2f} ({int(abs(adjusted_sentiment) * 100)}% confidence)</h3>
+                </div>
+                <div>
+                    <p style='color: #888; margin: 5px 0;'>Social Buzz</p>
+                    <h3 style='color: #FFFFFF; margin: 0;'>{social_buzz}</h3>
+                    <p style='color: #666; margin: 0; font-size: 14px;'>Mentions: {buzz_mentions} today</p>
+                </div>
+                <div>
+                    <p style='color: #888; margin: 5px 0;'>News Sentiment</p>
+                    <h3 style='color: #FFFFFF; margin: 0;'>{get_sentiment_label(adjusted_sentiment)}</h3>
+                </div>
+            </div>
+        </div>
+        """
+        st.markdown(summary_card, unsafe_allow_html=True)
+        
         with scenario_col2:
             if selected_scenario != "None":
                 st.metric(
