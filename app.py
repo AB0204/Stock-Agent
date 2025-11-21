@@ -328,9 +328,9 @@ if len(selected_tickers) > 1:
     )
     st.plotly_chart(fig, use_container_width=True)
 
-# --- SMART STOCK ANALYSIS (Iterate through tickers) ---
+# --- STOCK BREAKDOWN (Iterate through tickers) ---
 st.markdown("---")
-st.header("⚡ Smart Stock Analysis")
+st.header("💰 Stock Breakdown")
 
 tabs = st.tabs(selected_tickers)
 
