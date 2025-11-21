@@ -222,6 +222,10 @@ with st.sidebar:
     st.markdown("- 📉 **Technical Indicators**")
     st.markdown("- 🔮 **Scenario Planning**")
 
+# Main Page Title
+st.title("📈 Trade Smarter, Not Harder: Your Personal AI Stock Agent")
+st.markdown("---")
+
 if not selected_tickers:
     st.info("👈 Select or enter a stock ticker to get started!")
     st.stop()
