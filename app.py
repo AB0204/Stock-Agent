@@ -9,7 +9,12 @@ from PIL import Image, ImageDraw, ImageFont
 import io
 
 # Page Config
-st.set_page_config(page_title="Trade Smarter, Not Harder: Your Personal AI Stock Agent", page_icon="📈", layout="wide")
+st.set_page_config(
+    page_title="Trade Smarter, Not Harder: Your Personal AI Stock Agent", 
+    page_icon="📈", 
+    layout="wide",
+    initial_sidebar_state="expanded"  # Open sidebar by default on mobile
+)
 
 # Custom CSS
 st.markdown("""
@@ -225,6 +230,9 @@ with st.sidebar:
     st.markdown("- 📰 **Sentiment Analysis**")
     st.markdown("- 📉 **Technical Indicators**")
     st.markdown("- 🔮 **Scenario Planning**")
+
+# Mobile User Hint
+st.info("📱 **Mobile Users**: Tap the ☰ menu (top-left) to select markets and stocks!")
 
 # Main Page Title
 st.title("📈 Trade Smarter, Not Harder: Your Personal AI Stock Agent")
