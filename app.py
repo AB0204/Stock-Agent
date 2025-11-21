@@ -164,11 +164,40 @@ with st.sidebar:
         st.markdown("""
         <style>
             .stApp {
-                background-color: #FFFFFF;
-                color: #000000;
+                background-color: #FFFFFF !important;
+                color: #000000 !important;
             }
             .stSidebar {
-                background-color: #F5F5F5;
+                background-color: #F8F9FA !important;
+            }
+            h1, h2, h3, h4, h5, h6 {
+                color: #1E40AF !important;
+            }
+            .stMetric {
+                background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%) !important;
+                border-left: 4px solid #1E40AF !important;
+            }
+            .metric-card {
+                background: rgba(243, 244, 246, 0.7) !important;
+                border: 1px solid rgba(30, 64, 175, 0.2) !important;
+            }
+            /* Fix text colors */
+            p, span, div {
+                color: #000000 !important;
+            }
+            /* Fix labels */
+            .stMarkdown, .stText {
+                color: #000000 !important;
+            }
+        </style>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+        <style>
+            /* Ensure dark mode styles */
+            .stApp {
+                background-color: #0E1117 !important;
+                color: #FAFAFA !important;
             }
         </style>
         """, unsafe_allow_html=True)
@@ -484,35 +513,50 @@ for i, ticker in enumerate(selected_tickers):
         # Executive Summary Card
         st.markdown("---")
         st.markdown("### 📊 Executive Summary")
+        
+        # Theme-aware colors
+        if theme_mode:  # Light mode
+            card_bg = "linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%)"
+            border_color = "#1E40AF"
+            title_color = "#1E40AF"
+            text_color = "#000000"
+            label_color = "#6B7280"
+        else:  # Dark mode
+            card_bg = "linear-gradient(135deg, #1E1E1E 0%, #2D2D2D 100%)"
+            border_color = "#FFD700"
+            title_color = "#FFD700"
+            text_color = "#FFFFFF"
+            label_color = "#888"
+        
         summary_card = f"""
-        <div style='background: linear-gradient(135deg, #1E1E1E 0%, #2D2D2D 100%); 
-                    padding: 25px; border-radius: 15px; border: 2px solid #FFD700; margin-bottom: 20px;'>
-            <h2 style='color: #FFD700; margin: 0 0 15px 0;'>{ticker}</h2>
+        <div style='background: {card_bg}; 
+                    padding: 25px; border-radius: 15px; border: 2px solid {border_color}; margin-bottom: 20px;'>
+            <h2 style='color: {title_color}; margin: 0 0 15px 0;'>{ticker}</h2>
             <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 15px;'>
                 <div>
-                    <p style='color: #888; margin: 5px 0;'>Recommendation</p>
-                    <h3 style='color: {'#00FF88' if recommendation == 'BUY' else '#FF4444' if recommendation == 'SELL' else '#FFD700'}; margin: 0;'>{recommendation}</h3>
+                    <p style='color: {label_color}; margin: 5px 0;'>Recommendation</p>
+                    <h3 style='color: {'#00FF88' if recommendation == 'BUY' else '#FF4444' if recommendation == 'SELL' else border_color}; margin: 0;'>{recommendation}</h3>
                 </div>
                 <div>
-                    <p style='color: #888; margin: 5px 0;'>Target Price</p>
-                    <h3 style='color: #FFFFFF; margin: 0;'>${target_price:.2f} ({upside_percent:+.1f}%)</h3>
+                    <p style='color: {label_color}; margin: 5px 0;'>Target Price</p>
+                    <h3 style='color: {text_color}; margin: 0;'>${target_price:.2f} ({upside_percent:+.1f}%)</h3>
                 </div>
                 <div>
-                    <p style='color: #888; margin: 5px 0;'>Risk Level</p>
+                    <p style='color: {label_color}; margin: 5px 0;'>Risk Level</p>
                     <h3 style='color: {risk_color}; margin: 0;'>{risk_rating} (β: {beta:.2f})</h3>
                 </div>
                 <div>
-                    <p style='color: #888; margin: 5px 0;'>Sentiment Score</p>
-                    <h3 style='color: #FFFFFF; margin: 0;'>{adjusted_sentiment:.2f} ({int(abs(adjusted_sentiment) * 100)}% confidence)</h3>
+                    <p style='color: {label_color}; margin: 5px 0;'>Sentiment Score</p>
+                    <h3 style='color: {text_color}; margin: 0;'>{adjusted_sentiment:.2f} ({int(abs(adjusted_sentiment) * 100)}% confidence)</h3>
                 </div>
                 <div>
-                    <p style='color: #888; margin: 5px 0;'>Social Buzz</p>
-                    <h3 style='color: #FFFFFF; margin: 0;'>{social_buzz}</h3>
-                    <p style='color: #666; margin: 0; font-size: 14px;'>Mentions: {buzz_mentions} today</p>
+                    <p style='color: {label_color}; margin: 5px 0;'>Social Buzz</p>
+                    <h3 style='color: {text_color}; margin: 0;'>{social_buzz}</h3>
+                    <p style='color: {label_color}; margin: 0; font-size: 14px;'>Mentions: {buzz_mentions} today</p>
                 </div>
                 <div>
-                    <p style='color: #888; margin: 5px 0;'>News Sentiment</p>
-                    <h3 style='color: #FFFFFF; margin: 0;'>{get_sentiment_label(adjusted_sentiment)}</h3>
+                    <p style='color: {label_color}; margin: 5px 0;'>News Sentiment</p>
+                    <h3 style='color: {text_color}; margin: 0;'>{get_sentiment_label(adjusted_sentiment)}</h3>
                 </div>
             </div>
         </div>
