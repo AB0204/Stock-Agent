@@ -178,12 +178,16 @@ with st.sidebar:
     # Stock Selection based on market
     if market == "🇺🇸 US Stocks":
         popular_tickers = ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "TSLA", "META"]
-        additional_tickers = ["AMD", "INTC", "NFLX", "SPY", "QQQ"]
+        additional_tickers = ["AMD", "INTC", "NFLX", "SPY", "QQQ", "DIS", "COIN", 
+                             "UBER", "SNOW", "PLTR", "PYPL", "SQ", "SHOP", "CRWD",
+                             "V", "JPM", "BAC", "WMT", "KO", "PEP", "NKE"]
         default_ticker = ["TSLA"]
         custom_hint = "e.g. COIN, DIS"
     else:  # Indian Stocks
         popular_tickers = ["RELIANCE.NS", "TCS.NS", "INFY.NS", "HDFCBANK.NS", "ICICIBANK.NS", "SBIN.NS", "ITC.NS"]
-        additional_tickers = ["WIPRO.NS", "LT.NS", "BHARTIARTL.NS", "NIFTY50.NS"]
+        additional_tickers = ["WIPRO.NS", "LT.NS", "BHARTIARTL.NS", "TATAMOTORS.NS", "TATASTEEL.NS",
+                             "MARUTI.NS", "HCLTECH.NS", "AXISBANK.NS", "KOTAKBANK.NS", "BAJFINANCE.NS",
+                             "ADANIENT.NS", "HINDALCO.NS", "SUNPHARMA.NS", "ASIANPAINT.NS"]
         default_ticker = ["RELIANCE.NS"]
         custom_hint = "e.g. TATAMOTORS.NS"
     
