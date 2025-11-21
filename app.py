@@ -868,6 +868,24 @@ for i, ticker in enumerate(selected_tickers):
                 low=hist['Low'], close=hist['Close'])])
             fig.update_layout(xaxis_rangeslider_visible=False, template="plotly_dark", height=500)
             st.plotly_chart(fig, use_container_width=True)
+        
+        # PDF Report Generation
+        st.markdown("---")
+        st.subheader("📄 Professional PDF Report")
+        st.write("Download a comprehensive analysis report with all metrics, charts, and insights.")
+        if st.button(f"📥 Generate PDF Report", key=f"pdf_report_{ticker}"):
+            with st.spinner("Generating professional PDF report..."):
+                pdf_buffer = generate_pdf_report(ticker, info, hist, news, analyzed_news, recommendation, target_price, risk_rating, beta, adjusted_sentiment, social_buzz, buzz_mentions)
+                st.download_button(
+                    label="📄 Download PDF Report",
+                    data=pdf_buffer,
+                    file_name=f"{ticker}_Stock_Analysis_Report.pdf",
+                    mime="application/pdf",
+                    key=f"download_pdf_{ticker}",
+                    use_container_width=True
+                )
+                st.success("✅ PDF report generated successfully!")
+        
         else:
             st.warning("No price history available.")
 
