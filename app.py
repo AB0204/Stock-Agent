@@ -7,8 +7,14 @@ import pandas_ta as ta
 from datetime import datetime, timedelta
 from PIL import Image, ImageDraw, ImageFont
 import io
+import pytz
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.lib import colors
 
-# Force rebuild - v1.0.1
+# Force rebuild - v1.0.2
 
 # Page Config
 st.set_page_config(
@@ -154,9 +160,98 @@ def generate_certificate(ticker, price, recommendation, sentiment_score, pe_rati
     buf.seek(0)
     return buf
 
+def generate_pdf_report(ticker, info, hist, news, analyzed_news, recommendation, target_price, risk_rating, beta, sentiment_score, social_buzz, buzz_mentions):
+    """Generate comprehensive PDF stock report"""
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    styles = getSampleStyleSheet()
+    story = []
+    
+    # Title
+    title_style = ParagraphStyle('CustomTitle', parent=styles['Heading1'], fontSize=24, textColor=colors.HexColor('#1E40AF'), spaceAfter=30)
+    story.append(Paragraph(f"Stock Analysis Report: {ticker}", title_style))
+    story.append(Paragraph(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}", styles['Normal']))
+    story.append(Spacer(1, 0.3*inch))
+    
+    # Executive Summary
+    story.append(Paragraph("Executive Summary", styles['Heading2']))
+    current_price = info.get('currentPrice', info.get('regularMarketPrice', 0))
+    summary_data = [
+        ['Recommendation', recommendation],
+        ['Current Price', f"${current_price:.2f}"],
+        ['Target Price', f"${target_price:.2f}"],
+        ['Risk Level', f"{risk_rating} (Beta: {beta:.2f})"],
+        ['Sentiment Score', f"{sentiment_score:.2f}"],
+        ['Social Buzz', f"{social_buzz} ({buzz_mentions} mentions)"]
+    ]
+    summary_table = Table(summary_data, colWidths=[2.5*inch, 3*inch])
+    summary_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#E5E7EB')),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('FONT', (0, 0), (-1, -1), 'Helvetica', 10),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT')
+    ]))
+    story.append(summary_table)
+    story.append(Spacer(1, 0.3*inch))
+    
+    # Fundamentals
+    story.append(Paragraph("Fundamental Analysis", styles['Heading2']))
+    fund_data = [
+        ['Metric', 'Value'],
+        ['Market Cap', format_large_number(info.get('marketCap'))],
+        ['P/E Ratio', str(info.get('trailingPE', 'N/A'))],
+        ['52-Week High', f"${info.get('fiftyTwoWeekHigh', 0):.2f}"],
+        ['52-Week Low', f"${info.get('fiftyTwoWeekLow', 0):.2f}"],
+        ['Average Volume', format_large_number(info.get('averageVolume'))]
+    ]
+    fund_table = Table(fund_data, colWidths=[2.5*inch, 3*inch])
+    fund_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1E40AF')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('FONT', (0, 0), (-1, -1), 'Helvetica', 10)
+    ]))
+    story.append(fund_table)
+    story.append(Spacer(1, 0.3*inch))
+    
+    # Sentiment Analysis
+    story.append(Paragraph("News Sentiment Analysis", styles['Heading2']))
+    if analyzed_news:
+        avg_sentiment = sum(n['polarity'] for n in analyzed_news) / len(analyzed_news)
+        story.append(Paragraph(f"Average Sentiment: {avg_sentiment:.2f} ({len(analyzed_news)} articles analyzed)", styles['Normal']))
+    else:
+        story.append(Paragraph("No news data available.", styles['Normal']))
+    
+    # Footer
+    story.append(PageBreak())
+    story.append(Spacer(1, 2*inch))
+    story.append(Paragraph("Disclaimer", styles['Heading3']))
+    story.append(Paragraph("This report is for informational purposes only and does not constitute financial advice. Past performance does not guarantee future results. Consult a licensed financial advisor before making investment decisions.", styles['Normal']))
+    story.append(Spacer(1, 0.2*inch))
+    story.append(Paragraph("Analyzed by: Abhi Bhardwaj - Stock Agent", styles['Normal']))
+    story.append(Paragraph(f"Data Source: Yahoo Finance", styles['Normal']))
+    
+    doc.build(story)
+    buffer.seek(0)
+    return buffer
+
+# Initialize session state for watchlist
+if 'watchlist' not in st.session_state:
+    st.session_state.watchlist = []
+
 # Sidebar
 with st.sidebar:
     st.title("🤖 Stock Agent")
+    
+    # Watchlist Section
+    st.markdown("---")
+    st.markdown("### ⭐ Watchlist")
+    if st.session_state.watchlist:
+        watchlist_ticker = st.selectbox("Quick Access", st.session_state.watchlist)
+        if st.button("Load from Watchlist"):
+            selected_tickers = [watchlist_ticker]
+    else:
+        st.caption("No favorites yet. Add stocks below!")
     
     # Theme Toggle
     theme_mode = st.toggle("☀️ Light Mode", value=False)
@@ -459,6 +554,51 @@ for i, ticker in enumerate(selected_tickers):
             
             status.update(label=f"Analysis complete for {ticker}!", state="complete", expanded=False)
         
+        # Data Freshness & Watchlist
+        fresh_col1, fresh_col2, fresh_col3 = st.columns([2, 1, 1])
+        with fresh_col1:
+            current_time = datetime.now(pytz.timezone('America/New_York'))
+            st.caption(f"🕐 Last Updated: {current_time.strftime('%I:%M %p ET')} | {datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%I:%M %p IST')}")
+        with fresh_col2:
+            # Market status
+            market_open = 9 <= current_time.hour < 16 and current_time.weekday() < 5
+            status_emoji = "🟢" if market_open else "🔴"
+            st.caption(f"{status_emoji} Market: {'Open' if market_open else 'Closed'}")
+        with fresh_col3:
+            # Watchlist toggle
+            if ticker in st.session_state.watchlist:
+                if st.button(f"💔 Remove from Watchlist", key=f"remove_{ticker}"):
+                    st.session_state.watchlist.remove(ticker)
+                    st.success(f"Removed {ticker}")
+            else:
+                if st.button(f"⭐ Add to Watchlist", key=f"add_{ticker}"):
+                    st.session_state.watchlist.append(ticker)
+                    st.success(f"Added {ticker} to watchlist!")
+        
+        
+        # Institutional Ownership
+        st.markdown("---")
+        st.subheader("🏦 Institutional Ownership")
+        institutional_holders = stock.institutional_holders
+        if not institutional_holders.empty:
+            st.dataframe(institutional_holders.head(5), use_container_width=True, hide_index=True)
+        else:
+            st.info("No institutional ownership data available.")
+
+        # PDF Report Generation
+        st.markdown("---")
+        st.subheader("📄 Generate PDF Report")
+        if st.button(f"Download Full Report for {ticker}", key=f"pdf_report_{ticker}"):
+            with st.spinner("Generating PDF report..."):
+                pdf_buffer = generate_pdf_report(ticker, info, hist, news, analyzed_news, recommendation, target_price, risk_rating, beta, adjusted_sentiment, social_buzz, buzz_mentions)
+                st.download_button(
+                    label="Click to Download PDF",
+                    data=pdf_buffer,
+                    file_name=f"{ticker}_stock_report.pdf",
+                    mime="application/pdf",
+                    key=f"download_pdf_{ticker}"
+                )
+                st.success("PDF report generated successfully!")
         
         # Fundamentals
         col1, col2, col3, col4 = st.columns(4)
