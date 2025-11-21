@@ -78,18 +78,37 @@ with st.sidebar:
     
     st.markdown("---")
     
-    # Stock Selection
-    popular_tickers = ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "TSLA", "META"]
+    # Market Selection
+    market = st.radio(
+        "Select Market",
+        ["🇺🇸 US Stocks", "🇮🇳 Indian Stocks"],
+        index=0
+    )
+    
+    # Stock Selection based on market
+    if market == "🇺🇸 US Stocks":
+        popular_tickers = ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "TSLA", "META"]
+        additional_tickers = ["AMD", "INTC", "NFLX", "SPY", "QQQ"]
+        default_ticker = ["TSLA"]
+        custom_hint = "e.g. COIN, DIS"
+    else:  # Indian Stocks
+        popular_tickers = ["RELIANCE.NS", "TCS.NS", "INFY.NS", "HDFCBANK.NS", "ICICIBANK.NS", "SBIN.NS", "ITC.NS"]
+        additional_tickers = ["WIPRO.NS", "LT.NS", "BHARTIARTL.NS", "NIFTY50.NS"]
+        default_ticker = ["RELIANCE.NS"]
+        custom_hint = "e.g. TATAMOTORS.NS"
     
     selected_tickers = st.multiselect(
         "Select Stocks", 
-        options=popular_tickers + ["AMD", "INTC", "NFLX", "SPY", "QQQ"],
-        default=["TSLA"]
+        options=popular_tickers + additional_tickers,
+        default=default_ticker
     )
     
-    custom_ticker = st.text_input("Or type a ticker (e.g. COIN)")
+    custom_ticker = st.text_input(f"Or type a ticker ({custom_hint})")
     if custom_ticker:
         custom_ticker = custom_ticker.upper()
+        # Auto-add .NS suffix for Indian stocks if not present
+        if market == "🇮🇳 Indian Stocks" and not custom_ticker.endswith(('.NS', '.BO')):
+            custom_ticker = f"{custom_ticker}.NS"
         if custom_ticker not in selected_tickers:
             selected_tickers.append(custom_ticker)
     
