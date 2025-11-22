@@ -100,7 +100,7 @@ def analyze(symbol: str):
     header_text.append(f"Price: {current_price} {currency}\n", style="bold cyan")
     header_text.append(f"Sentiment: {sentiment_label} ({avg_polarity:.2f})", style=f"bold {sentiment_color}")
     
-    console.print(Panel(header_text, title="Stock Sentiment Agent", border_style="blue"))
+    console.print(Panel(header_text, title="SentiStock Analytics", border_style="blue"))
 
     # 2. News Table
     table = Table(title=f"Recent News for {ticker}")

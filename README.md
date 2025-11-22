@@ -1,4 +1,4 @@
-# Stock Sentiment Agent 📈
+# SentiStock Analytics 📈
 
 A powerful AI-driven tool that analyzes stock prices and news sentiment.
 
@@ -12,8 +12,8 @@ A powerful AI-driven tool that analyzes stock prices and news sentiment.
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/YOUR_USERNAME/Stock-Agent.git
-    cd Stock-Agent
+    git clone https://github.com/AB0204/SentiStock-Analytics.git
+    cd SentiStock-Analytics
     ```
 
 2.  **Install dependencies:**

@@ -18,7 +18,7 @@ from reportlab.lib import colors
 
 # Page Config
 st.set_page_config(
-    page_title="Trade Smarter, Not Harder: Your Personal AI Stock Agent", 
+    page_title="SentiStock Analytics - AI-Powered Stock Analysis", 
     page_icon="📈", 
     layout="wide",
     initial_sidebar_state="expanded"  # Open sidebar by default on mobile
@@ -151,7 +151,7 @@ def generate_certificate(ticker, price, recommendation, sentiment_score, pe_rati
     
     # Footer
     draw.line([(100, 640), (1100, 640)], fill='#FFD700', width=2)
-    draw.text((600, 690), "Analyzed by Abhi Bhardwaj - Stock Agent", fill='#888888', font=body_font, anchor='mm')
+    draw.text((600, 690), "Analyzed by Abhi Bhardwaj - SentiStock Analytics", fill='#888888', font=body_font, anchor='mm')
     draw.text((600, 740), f"Report Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}", fill='#666666', font=small_font, anchor='mm')
     
     # Convert to bytes
@@ -228,7 +228,7 @@ def generate_pdf_report(ticker, info, hist, news, analyzed_news, recommendation,
     story.append(Paragraph("Disclaimer", styles['Heading3']))
     story.append(Paragraph("This report is for informational purposes only and does not constitute financial advice. Past performance does not guarantee future results. Consult a licensed financial advisor before making investment decisions.", styles['Normal']))
     story.append(Spacer(1, 0.2*inch))
-    story.append(Paragraph("Analyzed by: Abhi Bhardwaj - Stock Agent", styles['Normal']))
+    story.append(Paragraph("Analyzed by: Abhi Bhardwaj - SentiStock Analytics", styles['Normal']))
     story.append(Paragraph(f"Data Source: Yahoo Finance", styles['Normal']))
     
     doc.build(story)
@@ -241,7 +241,7 @@ if 'watchlist' not in st.session_state:
 
 # Sidebar
 with st.sidebar:
-    st.title("🤖 Stock Agent")
+    st.title("🤖 SentiStock Analytics")
     
     # Watchlist Section
     st.markdown("---")
@@ -451,7 +451,7 @@ with st.sidebar:
 st.info("📱 **Mobile Users**: Tap the ☰ menu (top-left) to select markets and stocks!")
 
 # Main Page Title
-st.title("📈 Trade Smarter, Not Harder: Your Personal AI Stock Agent")
+st.title("📈 SentiStock Analytics - AI-Powered Stock Analysis")
 st.markdown("---")
 
 if not selected_tickers:
