@@ -896,6 +896,6 @@ st.markdown("""
     <p><strong>Built by: Abhi Bhardwaj</strong></p>
     <p>Data: <a href='https://github.com/ranaroussi/yfinance' target='_blank'>yfinance</a> | 
     Sentiment: <a href='https://textblob.readthedocs.io/' target='_blank'>TextBlob</a> | 
-    <a href='https://github.com/AB0204/Stock-Agent' target='_blank'>View on GitHub</a></p>
+    <a href='https://github.com/AB0204/SentiStock-Analytics' target='_blank'>View on GitHub</a></p>
 </div>
 """, unsafe_allow_html=True)
