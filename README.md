@@ -11,7 +11,7 @@
 ---
 
 ## 🌐 Live Demo
-**🚀 Try the App**: [https://share.streamlit.io/AB0204/SentiStock-Analytics](https://share.streamlit.io/AB0204/SentiStock-Analytics)
+**🚀 Try the App**: [https://stock-agent-3pltsb8klfpsbzuukamwyd.streamlit.app](https://stock-agent-3pltsb8klfpsbzuukamwyd.streamlit.app)
 
 ---
 
